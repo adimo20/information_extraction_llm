@@ -4,6 +4,16 @@
 
 1. [Short description](#short-description)
 2. [Scripts](#scripts)
+    - [Data Collection](#data-collection)
+        - [Implementation](#implementation)
+        - [Usage](#usage)
+    - [LLMClient](#llmclient)
+        - [Implementation](#implementation-1)
+        - [config](#config)
+        - [Application](#application)
+    - [Data Annotation](#data-annotation)
+3. [Labelling/Verfication](#labellingverfication)
+4. [Venv](#virtual-environment)
 
 ## Short description
 
@@ -130,3 +140,46 @@ exctracted_content will then look like this:
 
 
 ### Data Annotation
+
+`DataAnnotation` implements the class `DataAnnotator`. This class annotates the information extraction results retrieved from `LLMWorker` in the manner of named entity recognition. This means DataAnnotator identifies the positions/string indeces of the extracted content in the original fulltext string. This is done so we can load the annotated dataset into a labelling application to verify the results of our inference and catch potential non labelled examples the LLM didn't find. Like this we can also quantify the quality of our information extraction. 
+
+
+#### Implementation
+
+- `__init__`
+    - `extracted_content_dict:dict` - dictionary retrieved from LLMWorker
+    - `full_text_dict:dict` - dictionary that contains the the page_ids as keys and the corresponding original fulltexts as theier values
+    - `threshold:float` - threshold that needs to be meet regarding a fuzzy stringsimiliarity
+- `get_annotation_position` - return the start and end position of the extracted string inside of the original fulltext and a label
+- `get_fuzzy_annotation_position` - the extracted text runs over the fulltext like a sliding window. For every iteration of the window the levenstein distance is calculated. The match with the similiarity will be returned as best match and so the position of this match (if the threshold is met). 
+- `get_position` - executes  get_annotation_position and get_fuzzy_annotation_position and returns the positions of the extracted text or None
+- `make_entry` - creates an initial dictionary entry for the fulltext together with the page_id
+- `add_annotations` - adds the annotations to the initial entry created with `make_entry`
+- `annotate_data` - uses `extracted_content_dict` and `full_text_dict` and creates a labelled dataset, that can be loaded into label-studio
+
+#### Application
+
+```python 
+from src.DataAnnotation import DataAnnotator
+
+annotaed_dict = DataAnnotator(fulltext_dict=fulltext_dict, extracted_content_dict=extracted_content["results"]).annotate_data()
+
+
+```
+
+## Labelling/Verfication
+
+Install Label-Studio via pip and start it. Then import the output of `DataAnnoator` and select Named Entity Recognition as your Task and look into the data and start annotating (verifying the labels and adding not recognised content as new labels).
+
+```bash
+pip install label-studio
+label-studio start
+```
+
+## Virtual Environment
+
+Create your virtual environment for this application with create_venv.sh
+
+```
+sh create_venv.sh
+```
