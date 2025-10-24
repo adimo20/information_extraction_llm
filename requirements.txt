@@ -1,0 +1,7 @@
+pandas
+google
+google.generativeai
+pydantic
+ddbapi
+rapidfuzz
+numpy
