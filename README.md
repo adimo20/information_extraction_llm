@@ -24,7 +24,10 @@ The overall concept here could be located in the area of Named-Entity-Recognitio
 
 
 
-<img src="flowcharts/concept.drawio.png">
+<div style="text-align: center;">
+     <img src="flowcharts/concept.drawio.png">
+</div>
+
 
 ## Scripts
 
@@ -121,7 +124,10 @@ configs = {
 import pandas as pd
 
 random_sample = pd.read_csv("example.csv")
-extract = LLMWorker(configs=configs, input_id=random_sample.page_id.tolist(), text=random_sample.fulltext.tolist())
+
+input_id_list:list[str] = random_sample.page_id.tolist()
+fulltext_list:list[str] = random_sample.fulltext.tolist()
+extract = LLMWorker(configs=configs, input_id=input_id_list, text=fulltext_list)
 extracted_content = extract.extract_content()
 
 ```
@@ -167,6 +173,43 @@ exctracted_content will then look like this:
 - `annotate_data` - uses `extracted_content_dict` and `full_text_dict` and creates a labelled dataset, that can be loaded into label-studio
 
 #### Application
+
+Input for the extracted_content_dict Argument of `DataAnnotator` needs to look like this: 
+
+```json
+
+    {
+        "HUTO4BYZPVG3ZIFH5Q3RTJKHQSP36DLN-ALTO16820921_DDB_FULLTEXT": [
+            "Heiratsgeſuch, Gulsbeſitzer, 26 Jahre, ebv. , wünſcht die Bekanntſchaft einer jungen Dame mit etwas Ver - mögen zwecks ſofortiger Heirat . Diskretion Ehrenſache . Offerten unter V. 0389 an die Exped .",
+            "Witwe, 30 Jahre, ſehr däuslich, wiſcht Bekanntſchaft mit Jolidem Herrn zwecks baldiger Verheiralung, r gen einem e ausgeſchloſſen . Nur ernſtgeme Offerten unter V. 0765 an die Expedition ."
+        ],
+        "PSUHB3HUAXFDXK5VTZQ6BG5ASB5INL3V-ALTO16457896_DDB_FULLTEXT": [
+            "gleiner Landwirt , Mitte 30 , ſtrebſ . , wſcht . Be - kanntſchaft mit Mädchen v . Lande . auch dienend . Stand . im Alter von 25 - 30 J . zw . Heirat . Off . mit Angabe d . Verhältn . auch Bild beförd . die Fil . d . Bl . Leipzigerſtr . 34 u . t 7531 an die Exp . d . Bl . So —",
+            "Junger Mann 29 J . gut . Eharakt . , 30 o Verm . in Mineralw . - Branche tätig , ſucht Bekanſchft . mit einf . , fleiß . Mädchen dienend . Standes m . etw . Erſparniſſen zw . Heirat . Off . mögl . mit W unt . B . 2522 an die Exp . - \r e -",
+            "Jg . Herr , in guten Verh, , kann WMijähr . , häusl . u . geb . Fräulein mit 120000 M . ſpät . Vermög . heiraten . Ausführl . Offert . erbet . u . F . 2626 a . d . Exp . d . Bl . Keine gewerbsm . Vermittl .",
+            "Köchin , 30 J . ſucht zw . Heikat Bek . mit ſolid . Mann in ſich . Stell . Witwer mit Kind nicht aus⸗ geſchloſſ . Off . w . mögl . m . Bild , unt . C . 2643 a . d . Exp . d . Bl .",
+        ]
+    }
+
+```
+
+The input of fulltext_dict needs to look like this:
+
+```json
+    {
+        "PSUHB3HUAXFDXK5VTZQ6BG5ASB5INL3V-ALTO16457896_DDB_FULLTEXT":"Fulltext for the given key here",
+        "PSUHB3HUAXFDXK5VTZQ6BG5ASB5INL3V-ALT505464646_DDB_FULLTEXT":"Fulltext for the second key here"
+    
+    }
+
+
+```
+
+
+Input for the extracted_content_dict Argument of `DataAnnotator` needs to look like this: 
+
+
+Using `DataAnnotator` would then need to look like this:  
 
 ```python 
 from src.DataAnnotation import DataAnnotator
