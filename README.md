@@ -12,10 +12,19 @@
         - [config](#config)
         - [Application](#application)
     - [Data Annotation](#data-annotation)
+        - [Implementation](#implementation-2)
+        - [Application](#application-1)
 3. [Labelling/Verfication](#labellingverfication)
+    
 4. [Venv](#virtual-environment)
 
 ## Short description
+
+The overall concept here could be located in the area of Named-Entity-Recognition. We try to extract predefined information from a set of unstructured documents.
+
+
+
+<img src="flowcharts/concept.drawio.png">
 
 ## Scripts
 
